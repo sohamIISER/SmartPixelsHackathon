@@ -8,8 +8,8 @@ from utils import true_class_from_signed_pt, confusion_matrix_3, roc_curve_binar
 from plotting import plot_confusion, plot_roc, plot_prob_vs_pt, plot_acceptance_vs_pt
 import numpy as np
 
-MODEL_PATHS = ["output/best_model_baseline.pth", "output/best_model_370ifb.pth"]
-CONFIG_PATHS = ["config/baseline.yml", "config/370ifb.yml", "config/1100ifb.yml"]
+MODEL_PATHS = ["output/best_model_baseline.pth"]
+CONFIG_PATHS = ["config/baseline.yml"]
 
 device = "cuda"
 outdir = Path("output")
@@ -70,7 +70,7 @@ for model_path in MODEL_PATHS:
         logits = torch.cat(logits, dim=0)
         probs = torch.softmax(logits, dim=1).cpu().numpy()
         pred_classes = np.argmax(probs, axis=1).astype(np.int8)
-        true_classes = true_class_from_signed_pt(true_pts, pt_boundary=2.0)
+        true_classes = true_class_from_signed_pt(true_pts, pt_boundary=0.2)
         high_true = (true_classes == 2).astype(np.int32)
         
         config_name = Path(config_path).stem.replace("config/", "")
