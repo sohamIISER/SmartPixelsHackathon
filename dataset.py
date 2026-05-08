@@ -46,6 +46,7 @@ class SmartPixelsDataset(Dataset):
         self._last_file_idx = None
         self._last_images = None
         self._last_labels = None
+        self._last_radiation_level = None
 
         # make a flat index list (file_index, internal_index)
         self.index = []
@@ -69,12 +70,19 @@ class SmartPixelsDataset(Dataset):
     def _get_from_files(self, file_idx):
         # if it's the same file we used last time, reuse it
         if self._last_file_idx == file_idx:
-            return self._last_images, self._last_labels
+            return self._last_images, self._last_labels, self._last_radiation_level
         
         # print(f"Loading file {file_idx} from disk: {self.image_paths[file_idx]} and {self.label_paths[file_idx]}")
         
         image_path = self.image_paths[file_idx]
         label_path = self.label_paths[file_idx]
+
+        if "370" in image_path:
+            radiation_level = 0.37
+        elif "1100" in image_path:
+            radiation_level = 1.10
+        else:
+            radiation_level = 0.00
 
         self._last_images = pd.read_parquet(image_path).values
         self._last_labels = pd.read_parquet(label_path).values
@@ -83,8 +91,9 @@ class SmartPixelsDataset(Dataset):
             f"Image and label file length mismatch ({image_path}, {label_path})"
         
         self._last_file_idx = file_idx
+        self._last_radiation_level = radiation_level
 
-        return self._last_images, self._last_labels
+        return self._last_images, self._last_labels, self._last_radiation_level
     
 
     def __getitem__(self, idx):
@@ -96,13 +105,13 @@ class SmartPixelsDataset(Dataset):
         """
         file_idx, inside_idx = self.index[idx]
 
-        images, labels = self._get_from_files(file_idx)
+        images, labels, radiation_level = self._get_from_files(file_idx)
 
         x = images[inside_idx]
         y = labels[inside_idx]
 
         if self.transform:
-            x = self.transform(x, y)
+            x = self.transform(x, y, radiation_level)
 
         if self.target_transform:
             y = self.target_transform(y)

@@ -1,0 +1,20 @@
+root: /data/ligerlac/17180303-small-mixed/
+train:
+- [baseline/recon3D_sf1.parquet, baseline/labels_sf1.parquet]
+- [baseline/recon3D_sf2.parquet, baseline/labels_sf2.parquet]
+- [370fb/recon3D_sf1.parquet, 370fb/labels_sf1.parquet]
+- [370fb/recon3D_sf2.parquet, 370fb/labels_sf2.parquet]
+- [1100fb/recon3D_sf1.parquet, 1100fb/labels_sf1.parquet]
+- [1100fb/recon3D_sf2.parquet, 1100fb/labels_sf2.parquet]
+
+test:
+- [baseline/recon3D_sf8.parquet, baseline/labels_sf8.parquet]
+- [370fb/recon3D_sf8.parquet, 370fb/labels_sf8.parquet]
+- [1100fb/recon3D_sf8.parquet, 1100fb/labels_sf8.parquet]
+
+scaling:
+  mean_X: [0.4]
+  std_X: [2]
+  mean_y: [-1, -0.01, 100.0, 0.05, -0.001, -2., 50000., -0.001, 0.01, -0.02, 7.e-05, -0.01, -0.2]
+  std_y: [250, 10., 0.0, 10., 0.5, 0.5, 20000., 5., 2., 5., 0.1, 10., 50.]
+

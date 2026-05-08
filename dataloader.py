@@ -47,7 +47,7 @@ def get_transform(
         scale_y = Identity()
         scaling_enabled = False
 
-    def transform(raw_x, raw_y) -> torch.Tensor:
+    def transform(raw_x, raw_y, radiation_level=None) -> torch.Tensor:
         # --- preprocess x ---
         x = SymLogTransform()(raw_x)
         x = scale_x(x)
@@ -56,6 +56,7 @@ def get_transform(
         # --- preprocess y ---
         y_scaled = scale_y(raw_y)
         y0 = y_scaled[7]  # y-local
+
 
         # --- build features ---
         if input_type == "full":
@@ -75,10 +76,15 @@ def get_transform(
             y_profile = _y_profile_last_frame(x)
             features = np.concatenate(([y0], y_profile))
 
+        elif input_type == "y-profile-radiation":
+            y_profile = _y_profile_last_frame(x)
+            features = np.concatenate(([y0,radiation_level], y_profile))
+
         elif input_type == "y-profile-timing":
             y_profile = _y_profile_over_time(x)
             slices = y_profile[:N_SLICES].T  # (13, 8)
             features = np.concatenate(([y0], slices.flatten()))  # (1 + 13*8,)
+        
 
         else:
             raise ValueError(f"Unknown input_type: {input_type}")
@@ -150,7 +156,7 @@ def create_dataloaders(
     config_path: str,
     batch_size: int = 128,
     shuffle: bool = True,
-    input_type: str = "full",  # "full", "last-frame", "y-size", "y-profile", "y-profile-timing"
+    input_type: str = "full",  # "full", "last-frame", "y-size", "y-profile", "y-profile-timing", "y-profile-radiation"
     target_type: str = "regression",  # "regression" or "classification"
     val_size: float = 0.2,
     label_format: str = "one-hot",  # "index",

@@ -17,7 +17,7 @@ def main(args):
     train_loader, val_loader, test_loader = create_dataloaders(
         args.data_config,
         batch_size=128,
-        shuffle=False,
+        shuffle=True,
         val_size=0.2,
         input_type=input_type,
         target_type=task_type,

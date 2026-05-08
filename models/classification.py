@@ -33,6 +33,20 @@ class TowardsModel2(torch.nn.Module):
         x = torch.relu(self.fc1(x))
         x = self.fc2(x)
         return x
+
+@register("riyas-model", input_type="y-profile-radiation", task_type="classification")
+class RiyasModel(torch.nn.Module):
+    def __init__(self):
+        super(TowardsModel2, self).__init__()
+        self.fc1 = torch.nn.Linear(14, 128)
+        self.fc2 = torch.nn.Linear(128, 3)
+        self.softmax = torch.nn.Softmax(dim=1)
+
+    def forward(self, x):
+        assert x.shape == (x.shape[0], 14), f"Expected input shape (batch_size, 14), but got {x.shape}"
+        x = torch.relu(self.fc1(x))
+        x = self.fc2(x)
+        return x
     
 
 @register("towards-model-3", input_type="y-profile-timing", task_type="classification")
